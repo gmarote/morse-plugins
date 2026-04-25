@@ -1,0 +1,53 @@
+---
+name: consulta
+description: >
+  Consulta el estado de las comunicaciones de un proyecto de obra. Úsala
+  cuando el usuario pregunte por comunicaciones pendientes, pida un resumen
+  de un hilo o tema, busque comunicaciones por remitente o fecha, o quiera
+  una visión general del estado del proyecto.
+---
+
+# MORSE · Consulta de Comunicaciones de Obra
+
+Permite consultar, filtrar y resumir el registro de comunicaciones sin modificar ningún archivo.
+
+---
+
+## 1. Arranque
+
+**Paso 1 — Lee `Documentacion/RESUMEN.txt`**
+Proporciona el contexto de la obra necesario para interpretar correctamente las consultas. Si no existe, avisa y continúa solo con los datos del Excel.
+
+**Paso 2 — Lee el Excel**
+Abre `COMUNICACIONES.xlsx` y carga la hoja **Comunicaciones** completa. No es necesario verificar lock file — esta skill es de solo lectura.
+
+---
+
+## 2. Tipos de consulta
+
+**Estado general**
+Resumen del proyecto: total de comunicaciones, cuántas están pendientes de respuesta, cuántas pendientes de cliente, cuántas cerradas. Mencionar los hilos con más actividad reciente o con riesgo contractual o económico activo.
+
+**Por tema**
+Todas las comunicaciones de un tema: cronología, estado actual, qué está pendiente y quién debe actuar.
+
+**Por remitente o interlocutor**
+Todas las comunicaciones de o hacia una persona o entidad concreta.
+
+**Por estado**
+Listar comunicaciones con un Estado específico: `Pendiente respuesta`, `Pendiente cliente`, `Registrada`, `Cerrada`.
+
+**Por fecha o período**
+Comunicaciones dentro de un rango de fechas.
+
+**Búsqueda libre**
+Si la consulta no encaja en los tipos anteriores, buscar en las columnas Asunto y Resumen por palabras clave.
+
+---
+
+## 3. Formato de respuesta
+
+- Responder de forma directa y concisa. No mostrar tablas completas salvo que el jefe lo pida.
+- Si la consulta implica riesgo contractual o económico, destacarlo explícitamente.
+- Si hay comunicaciones pendientes de respuesta con plazo próximo o vencido, mencionarlo siempre aunque no se haya preguntado por ello.
+- No modificar ningún archivo. Si el jefe quiere registrar algo a raíz de la consulta, indicarle que use la skill de registro.
