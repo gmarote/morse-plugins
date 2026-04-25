@@ -1,12 +1,12 @@
 ---
 name: morse
 description: >
-  Sistema MORSE de gestión de comunicaciones de obra. Activar cuando el usuario
-  quiera registrar, archivar o gestionar comunicaciones de un proyecto de
-  construcción. Triggers: el usuario comparte un email, documento o imagen de
-  obra para archivar; menciona COMUNICACIONES_REGISTRO.xlsx; dice "registra
-  esta comunicación", "archiva este email", "nueva comunicación de obra", o
-  cualquier variante de archivar o registrar una comunicación de proyecto.
+  Gestiona el archivo y seguimiento de comunicaciones de obra en proyectos de
+  construcción. Úsala para registrar emails, actas, WhatsApps o documentos
+  recibidos o enviados; consultar el estado de comunicaciones abiertas; o
+  redactar respuestas. El usuario comparte cualquier comunicación de obra,
+  menciona COMUNICACIONES.xlsx, o pregunta por el estado de un tema o hilo
+  del proyecto.
 ---
 
 # MORSE · Sistema de Gestión de Comunicaciones de Obra
@@ -14,9 +14,9 @@ description: >
 MORSE centraliza el registro, archivo y seguimiento de todas las comunicaciones de un proyecto de construcción en una estructura de carpetas estándar, con un archivo excel de seguimiento.
 
 **Estructura de carpetas del proyecto:**
-- `COMUNICACIONES_REGISTRO.xlsx` — base de datos de todas las comunicaciones
+- `COMUNICACIONES.xlsx` — base de datos de todas las comunicaciones
 - `Comunicaciones/` — archivos de todas las comunicaciones, entrantes y salientes
-- `Documentacion/` — documentos de referencia (contratos, planning, etc.)
+- `Documentacion/` — documentos de referencia del proyecto (resumen, contratos, planning, etc.)
 
 Todo el contexto específico del proyecto está en `Documentacion/RESUMEN.txt`. Léelo al arrancar y úsalo como referencia para cualquier decisión de fondo. No inventes datos que no estén ahí.
 
@@ -28,14 +28,14 @@ Todo el contexto específico del proyecto está en `Documentacion/RESUMEN.txt`. 
 Contiene el contexto de la obra e instrucciones específicas del jefe. Sin ese archivo, avisa de que falta y no proceses nada.
 
 **Paso 2 — Verifica el lock file del Excel**
-Comprueba programáticamente si existe `~$COMUNICACIONES_REGISTRO.xlsx` en la carpeta. Si existe, intenta abrir el archivo como verificación secundaria (puede ser caché residual):
+Comprueba programáticamente si existe `~$COMUNICACIONES.xlsx` en la carpeta. Si existe, intenta abrir el archivo como verificación secundaria (puede ser caché residual):
 - Si el archivo **no se puede abrir** → Excel está abierto. Avisa al jefe y no continúes hasta que el lock desaparezca.
 - Si el archivo **sí se puede abrir** → lock residual, puedes continuar.
 
 **Paso 3 — Lee el Excel**
-Abre `COMUNICACIONES_REGISTRO.xlsx` y revisa la hoja **Comunicaciones** para:
-- Saber cuál es el último ID registrado.
-- Extraer los temas existentes (columna Tema) y repasar los resúmenes (columna Resumen) para construir una imagen del estado actual de la obra: qué hilos están abiertos, qué está pendiente, si hay exposición económica o contractual activa. Este contexto es imprescindible para asignar correctamente el tema de cualquier comunicación nueva.
+Abre `COMUNICACIONES.xlsx` y revisa la hoja **Comunicaciones** para:
+- Saber cuál es el último ID registrado. Si la hoja está vacía (primera comunicación del proyecto), el próximo ID será `01`.
+- Extraer los temas existentes (columna Tema) y repasar los resúmenes (columna Resumen) para construir una imagen del estado actual de la obra: qué hilos están abiertos, qué está pendiente, si hay exposición económica o contractual activa. Este contexto es imprescindible para asignar correctamente el tema de cualquier comunicación nueva. Si no hay registros previos, no hay temas con los que contrastar — proponer un tema nuevo basándose solo en el contenido de la comunicación.
 
 ---
 
@@ -84,18 +84,12 @@ El jefe puede corregir el tema directamente en el Excel.
 
 **Contextualizar el hilo**
 - Hilo existente: resumir el estado acumulado — cuántas comunicaciones, qué está pendiente, si hay riesgo contractual o exposición económica.
-- Hilo nuevo: indicar que se ha abierto un tema nuevo y cuál es el primer registro.
+- Hilo nuevo: indicar que se ha abierto un tema nuevo y cuál es el resumen del primer registro.
 
 **Proponer siguiente paso** y esperar confirmación antes de ejecutar:
-- **Redactar respuesta** — sugerir estilo (Formal / Técnico / Cordial) y esperar aprobación. Una vez aprobado, guardar como `.txt` en `Comunicaciones/` con su ID OUT y actualizar el Estado de la comunicación IN relacionada a **Cerrada**.
-- **Revisar documentación** — contrastar con contrato, planning u otros documentos en `Documentacion/`.
-- **Analizar opciones** — si hay implicación económica o contractual.
+- **Redactar respuesta** — si la comunicación registrada o el contexto del hilo requieren respuesta, sugerir la redacción de dicha respuesta, sugerir estilo (Formal / Técnico / Cordial) y esperar aprobación. Una vez aprobado redactar la respuesta y mostrar para validar o iterar. Una vez validada, guardar como `.txt` en `Comunicaciones/` con su ID OUT y actualizar el Estado de la comunicación IN relacionada: a **Pendiente cliente** si se espera confirmación o nueva respuesta del otro lado; a **Cerrada** si la respuesta resuelve el asunto sin acción pendiente en ningún lado.
+- **Revisar documentación** — si la comunicación registrada el contexto del hilo sugieren la revisión de la documentación del contrato, preguntar al jefe de obra si se deben consultar documentos del proyecto como el contrato, planning u otros documentos, existentes en `Documentacion/` o que deban ser aportados por el jefe de obra.
 - **Solo registrar** — si el jefe no necesita acción inmediata.
+- **Otras opciones** — sugerir otras opciones al jefe de obra relacionadas con el contexto de la comunicación registrada o del hilo.
 
 Iterar con el jefe hasta cerrar la acción o dejarla aparcada conscientemente.
-
-**Comunicaciones salientes iniciadas por la empresa**
-Cuando el jefe necesite escribir sin comunicación previa:
-- Asignar ID con dirección OUT y número correlativo
-- Registrar en el Excel con Estado **Pendiente cliente**
-- Guardar el `.txt` en `Comunicaciones/`
