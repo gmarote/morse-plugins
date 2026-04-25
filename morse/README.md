@@ -2,16 +2,21 @@
 
 MORSE centraliza el registro, archivo y seguimiento de todas las comunicaciones de un proyecto de construcción.
 
+## Skills disponibles
+
+- **registro** — archiva comunicaciones entrantes y salientes, redacta respuestas y actualiza el Excel
+- **consulta** — consulta el estado del proyecto, busca comunicaciones y resume hilos sin modificar nada
+
 ## Estructura de proyecto requerida
 
 Cada obra necesita su propia carpeta con esta estructura:
 
 ```
 Mi Obra/
-├── COMUNICACIONES_REGISTRO.xlsx   ← base de datos de comunicaciones
-├── Comunicaciones/                ← archivos de todas las comunicaciones
+├── COMUNICACIONES.xlsx    ← base de datos de comunicaciones
+├── Comunicaciones/        ← archivos de todas las comunicaciones
 └── Documentacion/
-    └── RESUMEN.txt                ← contexto del proyecto (ver plantilla)
+    └── RESUMEN.txt        ← contexto del proyecto (ver plantilla)
 ```
 
 ## RESUMEN.txt — qué debe incluir
@@ -26,8 +31,4 @@ Mi Obra/
 
 1. Instala el plugin en Cowork
 2. Apunta Cowork a la carpeta de tu obra
-3. Comparte una comunicación (email, imagen, documento) y MORSE la archiva y registra automáticamente
-
-## Versión
-
-0.1.1
+3. Comparte una comunicación para archivarla, o pregunta por el estado del proyecto
