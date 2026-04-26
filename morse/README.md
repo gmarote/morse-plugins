@@ -4,22 +4,25 @@ MORSE centraliza el registro, archivo y seguimiento de todas las comunicaciones 
 
 ## Skills disponibles
 
+- **nueva-obra** — inicializa un proyecto desde cero: crea las carpetas, genera el `RESUMEN.txt` mediante una conversación guiada y monta el `COMUNICACIONES.xlsx` a partir de la plantilla canónica
 - **registro** — archiva comunicaciones entrantes y salientes, redacta respuestas y actualiza el Excel
 - **consulta** — consulta el estado del proyecto, busca comunicaciones y resume hilos sin modificar nada
 
-## Estructura de proyecto requerida
+## Estructura de proyecto
 
-Cada obra necesita su propia carpeta con esta estructura:
+Cada obra vive en su propia carpeta con esta estructura, que `nueva-obra` crea automáticamente:
 
 ```
 Mi Obra/
 ├── COMUNICACIONES.xlsx    ← base de datos de comunicaciones
 ├── Comunicaciones/        ← archivos de todas las comunicaciones
 └── Documentacion/
-    └── RESUMEN.txt        ← contexto del proyecto (ver plantilla)
+    └── RESUMEN.txt        ← contexto del proyecto
 ```
 
-## RESUMEN.txt — qué debe incluir
+## RESUMEN.txt — qué contiene
+
+`nueva-obra` lo construye conversando con el jefe de obra. Cubre:
 
 - Datos de la obra (nombre, dirección, referencia, fechas, importe)
 - Interlocutores (jefe de obra, cliente, dirección facultativa, etc.)
@@ -31,4 +34,5 @@ Mi Obra/
 
 1. Instala el plugin en Cowork
 2. Apunta Cowork a la carpeta de tu obra
-3. Comparte una comunicación para archivarla, o pregunta por el estado del proyecto
+   - **Obra nueva** (carpeta vacía): lanza `nueva-obra` para montar la estructura
+   - **Obra ya inicializada**: comparte una comunicación para archivarla, o pregunta por el estado del proyecto
