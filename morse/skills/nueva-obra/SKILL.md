@@ -38,28 +38,65 @@ Crear en la raíz:
 
 ---
 
-## 3. Conversación guiada para `RESUMEN.txt`
+## 3. Formulario guiado para `RESUMEN.txt`
 
 `RESUMEN.txt` es el archivo de contexto que las skills `registro` y `consulta` leen al arrancar. Su calidad determina lo bien que el sistema asigna temas, detecta riesgo contractual y redacta respuestas.
 
-**Cómo conducir la conversación**
-- Ir por bloques, uno cada vez. No volcar todas las preguntas a la vez.
-- Después de cada bloque, preguntar al jefe si quiere seguir al siguiente o cerrar ya.
-- El jefe puede saltar cualquier bloque. Lo único imprescindible es el Bloque 1.
-- No inventar datos. Si el jefe no sabe algo o lo deja para después, dejarlo en blanco con una nota tipo `[pendiente]`.
+**Regla fundamental: siempre usar `AskUserQuestion` para recoger los datos. Nunca preguntar de forma conversacional libre.**
 
-**Bloques sugeridos**
+---
 
-1. **Identificación de la obra** — nombre del proyecto, dirección, código interno si lo hay. *(imprescindible)*
-2. **Partes implicadas** — empresa contratista (la parte del jefe), promotor, dirección facultativa, subcontratas relevantes. Para cada una: nombre completo y abreviatura corta para usar en los IDs (ej. `DF`, `PROM`, `CONT`).
-3. **Contrato** — fechas clave (firma, inicio, fin previsto), importe, penalizaciones por retraso, garantías, cualquier cláusula que el jefe quiera tener presente.
-4. **Planning** — hitos relevantes y fechas críticas.
-5. **Interlocutores habituales** — personas concretas con rol, contacto y abreviatura para los IDs (ej. `Arq. Rosa Fernández (DF)` → abreviatura `RF` o `DF`).
-6. **Instrucciones del jefe** — estilo de redacción por defecto (`Formal` / `Técnico` / `Cordial`), preferencias específicas (CC habituales, nivel de formalidad con cada parte, palabras a evitar, etc.).
-7. **Notas adicionales** — cualquier cosa que el jefe quiera dejar como contexto.
+### Llamada 1 — Identificación de la obra *(imprescindible)*
+
+Lanzar `AskUserQuestion` con estas 4 preguntas simultáneas:
+
+1. `"¿Nombre del proyecto?"` — opciones: `["Rehabilitación de edificio", "Reforma de vivienda", "Construcción de obra nueva"]` + Other para escribir el nombre real.
+2. `"¿Dirección de la obra?"` — opciones: `["Calle...", "Avenida...", "Plaza..."]` + Other para escribir la dirección real.
+3. `"¿Código interno del proyecto?"` — opciones: `["Sin código interno", "Asignar ahora"]` + Other para escribir el código.
+4. `"¿Abreviatura corta para IDs? (ej: FUEN, GRAN, MAD)"` — opciones: `["Sin abreviatura", "Usar las 4 primeras letras del nombre"]` + Other para escribir la abreviatura.
+
+---
+
+### Llamada 2 — ¿Añadir más datos ahora?
+
+Lanzar `AskUserQuestion` con una pregunta:
+
+`"¿Quieres completar más datos del proyecto ahora?"` — opciones:
+- `"Sí, añadir partes, contrato e interlocutores"` — descripción: "Recomendado. Cuanto más contexto, mejor trabajan registro y consulta."
+- `"Solo lo básico por ahora"` — descripción: "Puedes completar el RESUMEN.txt más adelante."
+
+Si elige **solo lo básico**, saltar al paso de escritura del archivo.
+
+---
+
+### Llamada 3 — Partes implicadas y contrato *(si el jefe quiere continuar)*
+
+Lanzar `AskUserQuestion` con hasta 4 preguntas:
+
+1. `"¿Promotor o cliente?"` — opciones: `["Comunidad de propietarios", "Promotora privada", "Administración pública"]` + Other.
+2. `"¿Dirección Facultativa (DF)?"` — opciones: `["Arquitecto externo", "Arquitecto técnico", "Sin DF definida"]` + Other para escribir nombre y estudio.
+3. `"¿Fecha de inicio y fin prevista?"` — opciones: `["Ya comenzada", "Pendiente de acta de inicio"]` + Other para escribir las fechas.
+4. `"¿Penalización por retraso?"` — opciones: `["Sin penalización", "A definir en contrato"]` + Other para escribir importe y condiciones.
+
+---
+
+### Llamada 4 — Interlocutores y estilo *(si el jefe quiere continuar)*
+
+Lanzar `AskUserQuestion` con hasta 3 preguntas:
+
+1. `"¿Persona de contacto principal en la DF?"` — opciones: `["No definida aún"]` + Other para escribir nombre, rol y abreviatura.
+2. `"¿Persona de contacto principal en el promotor?"` — opciones: `["No definida aún"]` + Other para escribir nombre, rol y abreviatura.
+3. `"¿Estilo de redacción por defecto?"` — opciones: `["Formal", "Técnico", "Cordial"]`.
+
+---
+
+**Normas generales**
+- No inventar datos. Si el jefe no sabe algo, usar `[pendiente]`.
+- El jefe puede saltar cualquier llamada. Solo la Llamada 1 es imprescindible.
+- Si el jefe escribe datos adicionales fuera del formulario (en el chat), incorporarlos al RESUMEN.txt igualmente.
 
 **Escritura del archivo**
-Una vez el jefe cierre la conversación, escribir `Documentacion/RESUMEN.txt` con un bloque por sección. Estructura sugerida:
+Una vez el jefe cierre el formulario, escribir `Documentacion/RESUMEN.txt` con un bloque por sección. Estructura sugerida:
 
 ```
 # [Nombre del proyecto]
