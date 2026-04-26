@@ -4,9 +4,9 @@ MORSE centraliza el registro, archivo y seguimiento de todas las comunicaciones 
 
 ## Skills disponibles
 
-- **nueva-obra** — inicializa un proyecto desde cero: crea las carpetas, genera el `RESUMEN.txt` mediante una conversación guiada, monta el `COMUNICACIONES.xlsx` y crea el dashboard en el sidebar de Cowork
-- **registro** — archiva comunicaciones entrantes y salientes, redacta respuestas, actualiza el Excel y refresca el dashboard automáticamente
-- **consulta** — consulta el estado del proyecto, busca comunicaciones y resume hilos sin modificar nada (también refresca el dashboard)
+- **nueva-obra** — inicializa un proyecto desde cero: crea las carpetas, genera el `RESUMEN.txt` mediante una conversación guiada y monta el `COMUNICACIONES.xlsx` a partir de la plantilla canónica
+- **registro** — archiva comunicaciones entrantes y salientes, redacta respuestas y actualiza el Excel
+- **consulta** — consulta el estado del proyecto, busca comunicaciones y resume hilos sin modificar nada
 
 ## Estructura de proyecto
 
@@ -19,16 +19,6 @@ Mi Obra/
 └── Documentacion/
     └── RESUMEN.txt        ← contexto del proyecto
 ```
-
-## Dashboard
-
-Al inicializar un proyecto, MORSE crea un **dashboard persistente** en el sidebar de Cowork. Muestra:
-
-- Contadores por estado: pendiente respuesta, pendiente cliente, registrada, cerrada
-- Tabla filtrable y con búsqueda libre por ID, remitente, asunto o tema
-- Tooltip con el resumen de cada comunicación al pasar el cursor
-
-El dashboard se actualiza automáticamente cada vez que el jefe usa `registro` o `consulta`. No requiere ninguna acción adicional.
 
 ## RESUMEN.txt — qué contiene
 
@@ -44,5 +34,5 @@ El dashboard se actualiza automáticamente cada vez que el jefe usa `registro` o
 
 1. Instala el plugin en Cowork
 2. Apunta Cowork a la carpeta de tu obra
-   - **Obra nueva** (carpeta vacía): lanza `nueva-obra` para montar la estructura y el dashboard
+   - **Obra nueva** (carpeta vacía): lanza `nueva-obra` para montar la estructura
    - **Obra ya inicializada**: comparte una comunicación para archivarla, o pregunta por el estado del proyecto
