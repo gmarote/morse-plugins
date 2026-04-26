@@ -156,7 +156,33 @@ Bloques omitidos pueden marcarse como `[pendiente]` o no incluirse, según prefi
 
 ---
 
-## 5. Cierre
+## 5. Crear dashboard
+
+Crear el artifact de dashboard para que el jefe pueda consultar el estado del proyecto desde el sidebar de Cowork en cualquier momento, sin invocar a Claude.
+
+**Pasos:**
+
+1. **Obtener el nombre de la carpeta del proyecto.** Es el último segmento de la ruta en la que se ha creado `COMUNICACIONES.xlsx`. Por ejemplo, si la ruta en bash es `/sessions/xyz/mnt/kalam/COMUNICACIONES.xlsx`, el nombre de carpeta es `kalam`.
+
+2. **Leer el archivo de plantilla del dashboard:**
+   Usar la herramienta Read sobre `references/dashboard.html` (en la misma carpeta que este SKILL.md).
+
+3. **Inyectar el nombre de carpeta:**
+   Reemplazar la cadena literal `{{PROJECT_FOLDER}}` en el HTML leído por el nombre de carpeta obtenido en el paso 1.
+
+4. **Crear el artifact:**
+   Llamar a `mcp__cowork__create_artifact` con:
+   - `id`: `morse-[nombre-carpeta]-dashboard` (todo minúsculas, sin espacios, con guiones)
+     Ejemplo: `morse-kalam-dashboard`
+   - `html`: el contenido HTML modificado del paso 3
+   - `mcp_tools`: `["mcp__workspace__bash"]`
+   - `description`: `Dashboard de comunicaciones del proyecto [Nombre del proyecto]. Lee COMUNICACIONES.xlsx en tiempo real.`
+
+El artifact quedará disponible en el sidebar de Cowork. El jefe puede recargarlo en cualquier momento con el botón "Reload" del propio sidebar.
+
+---
+
+## 6. Cierre
 
 Resumir al jefe lo que se ha creado:
 - Ruta de `COMUNICACIONES.xlsx`
