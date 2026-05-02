@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cardiff Tour 🏴󠁧󠁢󠁷󠁬󠁳󠁿</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+      background: #0f172a;
+      overflow: hidden;
+    }
+
+    #map { width: 100vw; height: 100vh; }
+
+    /* ── Header pill ── */
+    #header {
+      position: fixed;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(15,23,42,0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 99px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      z-index: 1000;
+      white-space: nowrap;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+
+    /* ── Legend ── */
+    #legend {
+      position: fixed;
+      top: 56px;
+      right: 12px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 10px 14px;
+      border-radius: 14px;
+      z-index: 1000;
+      font-size: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+      line-height: 1;
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 5px 0;
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .legend-pin {
+      width: 22px;
+      height: 22px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .legend-pin span {
+      transform: rotate(45deg);
+      font-size: 10px;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* ── FAB buttons ── */
+    #fab-group {
+      position: fixed;
+      bottom: 28px;
+      right: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1000;
+    }
+
+    .fab {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .fab:active { transform: scale(0.92); box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+
+    #btn-locate {
+      background: #2563eb;
+      color: white;
+    }
+
+    #btn-locate.tracking {
+      background: #10b981;
+      animation: pulse-ring 1.8s infinite;
+    }
+
+    #btn-fit {
+      background: white;
+      color: #1e293b;
+    }
+
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+      70%  { box-shadow: 0 0 0 12px rgba(16,185,129,0); }
+      100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+    }
+
+    /* ── Info card (bottom sheet) ── */
+    #info-card {
+      position: fixed;
+      bottom: -220px;
+      left: 0; right: 0;
+      background: white;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 20px 32px;
+      z-index: 2000;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.2);
+      transition: bottom 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+
+    #info-card.open { bottom: 0; }
+
+    #card-handle {
+      width: 40px;
+      height: 4px;
+      background: #d1d5db;
+      border-radius: 99px;
+      margin: 0 auto 14px;
+    }
+
+    #card-emoji { font-size: 28px; margin-bottom: 6px; }
+
+    #card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    #card-desc {
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
+    .card-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-blue  { background: #dbeafe; color: #1d4ed8; }
+    .badge-amber { background: #fef3c7; color: #b45309; }
+    .badge-gray  { background: #f1f5f9; color: #64748b; }
+
+    #card-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: #f1f5f9;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #6b7280;
+    }
+
+    /* ── Leaflet overrides ── */
+    .leaflet-control-zoom {
+      margin-top: 58px !important;
+      margin-left: 12px !important;
+      border: none !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2) !important;
+    }
+
+    .leaflet-control-zoom a {
+      border-radius: 8px !important;
+      border: none !important;
+      color: #374151 !important;
+      font-size: 18px !important;
+    }
+
+    .leaflet-control-attribution { display: none; }
+  </style>
+</head>
+<body>
+
+<div id="header">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Cardiff · Tour 3h</div>
+
+<div id="legend">
+  <div class="legend-row">
+    <div class="legend-pin" style="background:#2563eb"><span>1</span></div>
+    <span>Paradas del tour</span>
+  </div>
+  <div class="legend-row">
+    <div class="legend-pin" style="background:#94a3b8"><span>8</span></div>
+    <span>Parada opcional</span>
+  </div>
+  <div class="legend-row">
+    <span style="font-size:19px;line-height:1">🍺</span>
+    <span>Craft breweries</span>
+  </div>
+</div>
+
+<div id="map"></div>
+
+<div id="fab-group">
+  <button class="fab" id="btn-fit" title="Ver todo el recorrido">⛶</button>
+  <button class="fab" id="btn-locate" title="Mi ubicación (mantén para seguimiento)">◎</button>
+</div>
+
+<div id="info-card">
+  <div id="card-handle"></div>
+  <button id="card-close">✕</button>
+  <div id="card-emoji"></div>
+  <div id="card-title"></div>
+  <div id="card-desc"></div>
+  <div id="card-badge"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ─── Map init ───────────────────────────────────────────────────────────────
+const map = L.map('map', {
+  center: [51.4810, -3.1800],
+  zoom: 15,
+  zoomControl: true,
+  attributionControl: true,
+  tapTolerance: 15
+});
+
+L.control.zoom({ position: 'topleft' }).addTo(map);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap',
+  maxZoom: 19
+}).addTo(map);
+
+// ─── Data ───────────────────────────────────────────────────────────────────
+const STOPS = [
+  {
+    num: 1, emoji: '🚂',
+    name: 'Cardiff Central Station',
+    coords: [51.4759, -3.1791],
+    desc: 'Punto de partida. Cruza el río Taff dirección norte hacia el estadio.',
+    badge: 'Salida', badgeType: 'blue'
+  },
+  {
+    num: 2, emoji: '🏟️',
+    name: 'Principality Stadium',
+    coords: [51.4782, -3.1826],
+    desc: 'Ex Millennium Stadium. Uno de los grandes templos del rugby mundial. Rodéalo para apreciarlo bien desde fuera.',
+    badge: '~10 min desde inicio', badgeType: 'blue'
+  },
+  {
+    num: 3, emoji: '🛍️',
+    name: 'St. Mary Street & Arcades',
+    coords: [51.4797, -3.1767],
+    desc: 'Calle animada con edificios victorianos. No te pierdas el Castle Arcade y el Royal Arcade: pasajes cubiertos con tiendas independientes, muy característicos de Cardiff.',
+    badge: '~20–30 min', badgeType: 'blue'
+  },
+  {
+    num: 4, emoji: '🏰',
+    name: 'Cardiff Castle',
+    coords: [51.4820, -3.1826],
+    desc: 'Uno de los grandes atractivos de Cardiff. Puedes entrar al recinto exterior rápidamente o al menos disfrutar de las murallas y el entorno desde fuera.',
+    badge: '~30–40 min', badgeType: 'blue'
+  },
+  {
+    num: 5, emoji: '🌳',
+    name: 'Bute Park',
+    coords: [51.4868, -3.1854],
+    desc: 'Parque enorme, verde y tranquilo junto al río Taff. Camina un tramo siguiendo el río: contraste muy agradable con la ciudad.',
+    badge: '~20–25 min', badgeType: 'blue'
+  },
+  {
+    num: 6, emoji: '🏛️',
+    name: 'Civic Centre',
+    coords: [51.4876, -3.1772],
+    desc: 'Cardiff City Hall y National Museum Cardiff. Zona elegante con arquitectura eduardiana y amplios espacios abiertos. Muy fotogénico.',
+    badge: '~20–25 min', badgeType: 'blue'
+  },
+  {
+    num: 7, emoji: '🛒',
+    name: 'Queen Street & St. David\'s',
+    coords: [51.4809, -3.1748],
+    desc: 'Principal calle comercial peatonal. St. David\'s Shopping Centre si quieres el contraste con lo moderno. Desde aquí vuelves a la estación en 15 min.',
+    badge: '~20 min', badgeType: 'blue'
+  },
+  {
+    num: 8, emoji: '🌊',
+    name: 'Cardiff Bay (opcional)',
+    coords: [51.4641, -3.1674],
+    desc: 'Bahía moderna con ambiente marítimo. Wales Millennium Centre y Senedd (Parlamento galés). Muy recomendable si vas bien de tiempo. Taxi/Uber ~10 min o 30 min a pie desde el centro.',
+    badge: '+45–60 min extra', badgeType: 'gray', optional: true
+  }
+];
+
+const BREWERIES = [
+  {
+    emoji: '🍺',
+    name: 'Tiny Rebel Cardiff',
+    coords: [51.4793, -3.1843],
+    desc: 'Una de las marcas craft más conocidas de Gales, procedente de Newport. Bar muy céntrico, en 25 Westgate Street, ideal para terminar la ruta por el centro.',
+    badge: 'Sáb hasta 2:00 · Westgate St', badgeType: 'amber'
+  },
+  {
+    emoji: '🍺',
+    name: 'Crafty Devil Cellar Bar & Shop',
+    coords: [51.4908, -3.2038],
+    desc: 'La recomendación principal. Cervecería local de Cardiff, small batch, ambiente de taproom auténtico. Si solo vais a una, esta es.',
+    badge: '⭐ Top pick · Canton', badgeType: 'amber'
+  },
+  {
+    emoji: '🍺',
+    name: 'Flowerhorn Brewery Taproom',
+    coords: [51.4845, -3.2102],
+    desc: 'Muy buena segunda opción. Taproom de brewery local, rollo moderno y chill. Abierto el sábado de 12:00 a 23:00.',
+    badge: 'Sáb 12:00–23:00 · Canton', badgeType: 'amber'
+  }
+];
+
+// ─── Icons ──────────────────────────────────────────────────────────────────
+function pinIcon(num, optional) {
+  const bg = optional ? '#94a3b8' : '#2563eb';
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:34px;height:34px;
+      background:${bg};
+      border:2.5px solid white;
+      border-radius:50% 50% 50% 0;
+      transform:rotate(-45deg);
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 2px 10px rgba(0,0,0,0.35);">
+        <span style="transform:rotate(45deg);font-size:13px;font-weight:700;color:white;">${num}</span>
+    </div>`,
+    iconSize: [34, 34],
+    iconAnchor: [17, 34],
+    popupAnchor: [0, -36]
+  });
+}
+
+function breweryIcon() {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:38px;height:38px;
+      background:#f97316;
+      border:2.5px solid white;
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:20px;
+      box-shadow:0 2px 10px rgba(0,0,0,0.35);">🍺</div>`,
+    iconSize: [38, 38],
+    iconAnchor: [19, 19]
+  });
+}
+
+function myLocationIcon() {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:18px;height:18px;
+      background:#2563eb;
+      border:3px solid white;
+      border-radius:50%;
+      box-shadow:0 0 0 4px rgba(37,99,235,0.25);">
+    </div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9]
+  });
+}
+
+// ─── Info card ──────────────────────────────────────────────────────────────
+const card     = document.getElementById('info-card');
+const cardClose= document.getElementById('card-close');
+const cardEmoji= document.getElementById('card-emoji');
+const cardTitle= document.getElementById('card-title');
+const cardDesc = document.getElementById('card-desc');
+const cardBadge= document.getElementById('card-badge');
+
+const BADGE_CLASSES = {
+  blue:  'card-badge badge-blue',
+  amber: 'card-badge badge-amber',
+  gray:  'card-badge badge-gray'
+};
+
+function openCard(data) {
+  cardEmoji.textContent = data.emoji;
+  cardTitle.textContent = data.name;
+  cardDesc.textContent  = data.desc;
+  cardBadge.textContent = data.badge;
+  cardBadge.className   = BADGE_CLASSES[data.badgeType] || BADGE_CLASSES.blue;
+  card.classList.add('open');
+}
+
+function closeCard() { card.classList.remove('open'); }
+
+cardClose.addEventListener('click', closeCard);
+map.on('click', closeCard);
+
+// ─── Markers ────────────────────────────────────────────────────────────────
+STOPS.forEach(s => {
+  const m = L.marker(s.coords, { icon: pinIcon(s.num, s.optional) }).addTo(map);
+  m.on('click', e => { L.DomEvent.stopPropagation(e); openCard(s); });
+});
+
+BREWERIES.forEach(b => {
+  const m = L.marker(b.coords, { icon: breweryIcon() }).addTo(map);
+  m.on('click', e => { L.DomEvent.stopPropagation(e); openCard(b); });
+});
+
+// ─── Route lines ─────────────────────────────────────────────────────────────
+const mainCoords = STOPS.slice(0, 7).map(s => s.coords);
+L.polyline(mainCoords, {
+  color: '#2563eb', weight: 4, opacity: 0.65, dashArray: '10, 7',
+  lineJoin: 'round', lineCap: 'round'
+}).addTo(map);
+
+// Optional extension to Bay
+L.polyline([STOPS[6].coords, STOPS[7].coords], {
+  color: '#94a3b8', weight: 3, opacity: 0.55, dashArray: '6, 10',
+  lineJoin: 'round'
+}).addTo(map);
+
+// ─── Fit button ──────────────────────────────────────────────────────────────
+document.getElementById('btn-fit').addEventListener('click', () => {
+  const all = [...STOPS.map(s => s.coords), ...BREWERIES.map(b => b.coords)];
+  map.fitBounds(all, { padding: [50, 50] });
+  closeCard();
+});
+
+// ─── Geolocation ─────────────────────────────────────────────────────────────
+let locMarker = null;
+let locCircle = null;
+let watchId   = null;
+let tracking  = false;
+const btnLocate = document.getElementById('btn-locate');
+
+function updateLocation(lat, lng, accuracy) {
+  if (!locMarker) {
+    locMarker = L.marker([lat, lng], { icon: myLocationIcon(), zIndexOffset: 9000 }).addTo(map);
+    locCircle = L.circle([lat, lng], {
+      radius: accuracy, color: '#2563eb',
+      fillColor: '#2563eb', fillOpacity: 0.08, weight: 1
+    }).addTo(map);
+  } else {
+    locMarker.setLatLng([lat, lng]);
+    locCircle.setLatLng([lat, lng]);
+    locCircle.setRadius(accuracy);
+  }
+}
+
+btnLocate.addEventListener('click', () => {
+  if (!navigator.geolocation) {
+    alert('Geolocalización no disponible en este dispositivo.');
+    return;
+  }
+
+  if (tracking) {
+    // Stop tracking
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+    tracking = false;
+    btnLocate.classList.remove('tracking');
+    btnLocate.title = 'Mi ubicación';
+    return;
+  }
+
+  // One-shot locate
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+      updateLocation(lat, lng, accuracy);
+      map.setView([lat, lng], 16);
+    },
+    () => alert('No se pudo obtener tu ubicación.\nAsegúrate de tener el GPS activo y haber dado permiso al navegador.'),
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+  );
+});
+
+// Long-press to enable continuous tracking
+let pressTimer;
+btnLocate.addEventListener('touchstart', () => {
+  pressTimer = setTimeout(() => startTracking(), 600);
+}, { passive: true });
+btnLocate.addEventListener('touchend', () => clearTimeout(pressTimer), { passive: true });
+btnLocate.addEventListener('mousedown', () => { pressTimer = setTimeout(() => startTracking(), 600); });
+btnLocate.addEventListener('mouseup', () => clearTimeout(pressTimer));
+
+function startTracking() {
+  if (!navigator.geolocation || tracking) return;
+  tracking = true;
+  btnLocate.classList.add('tracking');
+  btnLocate.title = 'Seguimiento activo (toca para parar)';
+
+  watchId = navigator.geolocation.watchPosition(
+    pos => {
+      const { latitude: lat, longitude: lng, accuracy } = pos.coords;
+      updateLocation(lat, lng, accuracy);
+      map.panTo([lat, lng], { animate: true, duration: 0.5 });
+    },
+    () => {
+      tracking = false;
+      btnLocate.classList.remove('tracking');
+    },
+    { enableHighAccuracy: true, maximumAge: 3000 }
+  );
+}
+
+// ─── Touch swipe down to close card ─────────────────────────────────────────
+let touchStartY = 0;
+card.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+card.addEventListener('touchend',   e => {
+  if (e.changedTouches[0].clientY - touchStartY > 60) closeCard();
+}, { passive: true });
+</script>
+</body>
+</html>
