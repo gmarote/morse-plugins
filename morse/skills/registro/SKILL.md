@@ -22,25 +22,6 @@ Todo el contexto específico del proyecto está en `Documentacion/RESUMEN.txt`. 
 
 ---
 
-## 0. Bienvenida
-
-Antes de nada, usar la herramienta `mcp__visualize__show_widget` para mostrar el logo de Morse con este HTML:
-
-```html
-<div style="text-align:center; padding: 16px 0 8px 0;">
-  <img src="https://cdn.jsdelivr.net/gh/gmarote/assets@main/logos/Morse.jpg"
-       alt="Morse" style="max-width: 320px; width: 100%;" />
-</div>
-```
-
-- `title`: `morse_logo`
-- `loading_messages`: `["Iniciando Morse..."]`
-
-Mostrar el logo y continuar inmediatamente sin esperar respuesta del jefe.
-
----
-
-
 ## 1. Comprobaciones de inicio
 
 **Paso 1 — Lee `Documentacion/RESUMEN.txt`**
@@ -87,26 +68,26 @@ Si algún adjunto es un documento formal con entidad propia (acta firmada, burof
 
 ## 3. Actualizar el Excel con el nuevo registro
 
-**Asignar el Tema**
-Contrastar la comunicación contra los bloques de `Documentacion/TEMAS.txt`:
-- Si encaja claramente en un único tema existente, asignarlo e indicar al jefe el motivo.
-- Si toca dos o más temas existentes, asignar **General** e indicar al jefe por qué.
-- Si no encaja en ninguno, crear un nombre de tema descriptivo.
+**Identificar temas y crear filas**
+Leer la comunicación completa y agrupar su contenido por temas. Contrastar cada tema detectado contra los bloques de `Documentacion/TEMAS.txt` para decidir si encaja en uno existente o requiere uno nuevo.
 
-El jefe puede corregir el tema directamente en el Excel.
+Crear **una fila por tema** en el Excel. Los campos ID, Fecha, Dirección, Medio y Remitente se repiten en todas las filas; los campos Tema, Asunto, Resumen, Plazo respuesta y Estado son específicos de cada fila.
+
+- Si un punto o conjunto de puntos encaja en un tema existente, asignarlo.
+- Si hay puntos menores, informativos o sin hilo propio, agruparlos en una sola fila con tema **"Varios"**.
+- Si se detecta un tema que no existe en TEMAS.txt, crear un nombre descriptivo y añadir el bloque correspondiente.
+
+El jefe puede corregir temas directamente en el Excel.
 
 **Actualizar `Documentacion/TEMAS.txt`**
 Modificar el archivo solo en estos casos:
 - **Tema nuevo:** añadir al final un bloque con este formato:
   ```
   ## [Nombre del tema]
-  [Una o dos frases describiendo de qué trata este tema.]
+  [Una o dos frases describiendo el perímetro del tema: qué tipo de asuntos abarca.]
   ```
-- **Matiz relevante en tema existente:** si la comunicación aporta un sub-hilo o detalle concreto que ayude a clasificar futuras comunicaciones en ese tema (un plazo específico, un actor nuevo, una variante del asunto), añadir una línea `Incluye:` al bloque correspondiente:
-  ```
-  Incluye: [descripción breve del sub-hilo o detalle]
-  ```
-- **Comunicación rutinaria dentro de un tema ya bien descrito:** no tocar el archivo.
+- **Descripción insuficiente:** si la comunicación revela que el perímetro del tema es más amplio de lo que describe el bloque actual, ampliar la descripción.
+- **Tema ya bien descrito:** no tocar el archivo.
 
 **Campos:** ver `references/campos-excel.md`
 

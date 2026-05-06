@@ -12,27 +12,9 @@ Construye un relato claro del historial de un tema y termina con una valoración
 
 ---
 
-## 0. Bienvenida
-
-Antes de nada, usar la herramienta `mcp__visualize__show_widget` para mostrar el logo de Morse con este HTML:
-
-```html
-<div style="text-align:center; padding: 16px 0 8px 0;">
-  <img src="https://cdn.jsdelivr.net/gh/gmarote/assets@main/logos/Morse.jpg"
-       alt="Morse" style="max-width: 320px; width: 100%;" />
-</div>
-```
-
-- `title`: `morse_logo`
-- `loading_messages`: `["Iniciando Morse..."]`
-
-Mostrar el logo y continuar inmediatamente sin esperar respuesta del jefe.
-
----
-
 ## 1. Obtener el tema
 
-Si el usuario no ha especificado un tema, lista los temas únicos presentes en `COMUNICACIONES.xlsx` y pregunta cuál quiere revisar. Espera la respuesta antes de continuar.
+Si el usuario no ha especificado un tema, lee `Documentacion/TEMAS.txt` y lista los temas disponibles; pregunta cuál quiere revisar. Espera la respuesta antes de continuar.
 
 ---
 
@@ -40,7 +22,7 @@ Si el usuario no ha especificado un tema, lista los temas únicos presentes en `
 
 **Lee `Documentacion/RESUMEN.txt`** para obtener contexto del proyecto: partes, roles, plazos contractuales y condiciones relevantes. Si no existe, continúa sin él.
 
-**Lee `COMUNICACIONES.xlsx`** y filtra todas las filas cuyo campo `Tema` coincida con el solicitado, más todas las filas con `Tema` = **"General"**. Estas últimas se incluyen siempre al analizar cualquier hilo concreto. Ordénalas por `Fecha` de más antigua a más reciente. En la cronología, las filas de General se marcan con `[Transversal]` para distinguirlas visualmente de las del tema específico.
+**Lee `COMUNICACIONES.xlsx`** y filtra todas las filas cuyo campo `Tema` coincida con el solicitado. Ordénalas por `Fecha` de más antigua a más reciente. Es normal que varias filas compartan el mismo ID: son el ángulo temático de ese documento en este hilo concreto.
 
 ---
 
