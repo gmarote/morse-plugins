@@ -95,6 +95,18 @@ Modificar el archivo solo en estos casos:
 
 ---
 
-## 4. Llamar a `resumen`
+## 4. Confirmar registro y proponer siguiente paso
 
-Una vez completado el registro (archivo guardado en `Comunicaciones/`, fila escrita en el Excel, `TEMAS.txt` actualizado si procede), invocar automáticamente la skill `resumen` pasándole el tema asignado. No esperar confirmación del jefe ni proponer pasos intermedios: `resumen` se encarga del análisis del hilo y la propuesta de acción.
+Presentar un resumen de lo archivado:
+
+```
+Registrado: [ID] — [Medio], [Fecha]
+
+Temas registrados:
+- **[Tema A]** — [Asunto]. Estado: [Estado].
+- **[Tema B]** — [Asunto]. Estado: [Estado].
+```
+
+Si algún tema quedó como **Pendiente respuesta**, preguntar al jefe si quiere revisar el hilo de ese tema con `resumen` para valorar la situación y preparar respuesta. Si hay varios temas pendientes, listarlos y preguntar cuál revisar primero.
+
+Si todos los temas quedaron como **Registrada**, **Pendiente cliente** o **Cerrada**, indicar que el registro está completo sin acciones pendientes por nuestra parte.
