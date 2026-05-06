@@ -22,7 +22,7 @@ Si el usuario no ha especificado un tema, lee `Documentacion/TEMAS.txt` y lista 
 
 **Lee `Documentacion/RESUMEN.txt`** para obtener contexto del proyecto: partes, roles, plazos contractuales y condiciones relevantes. Si no existe, continúa sin él.
 
-**Lee `COMUNICACIONES.xlsx`** y filtra todas las filas cuyo campo `Tema` coincida con el solicitado, más todas las filas con `Tema` = **"General"**. Estas últimas se incluyen siempre al analizar cualquier hilo concreto. Ordénalas por `Fecha` de más antigua a más reciente. En la cronología, las filas de General se marcan con `[Transversal]` para distinguirlas visualmente de las del tema específico.
+**Lee `COMUNICACIONES.xlsx`** y filtra todas las filas cuyo campo `Tema` coincida con el solicitado. Ordénalas por `Fecha` de más antigua a más reciente. Es normal que varias filas compartan el mismo ID: son el ángulo temático de ese documento en este hilo concreto.
 
 ---
 
